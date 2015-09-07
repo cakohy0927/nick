@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
+        version="2.1">
+    <tlib-version>1.0</tlib-version>
+    <short-name>file</short-name>
+    <uri>http://file-upload.upload</uri>
+    <tag>
+        <name>upload</name>
+        <tag-class>com.cako.tag.FileUploadTag</tag-class>
+        <body-content>empty</body-content>
+        <!-- <attribute>
+            <description>当前页</description>
+            <name>moduelId</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute> -->
+    </tag>
+    <tag>
+        <name>activiti</name>
+        <tag-class>com.cako.tag.ActivitiTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+</taglib>

@@ -1,0 +1,35 @@
+@CHARSET "UTF-8";
+.view-image{
+	padding:10px;
+	border:2px solid #f2f2f2;
+	margin:0px 20px 0px 20px;
+	border-color: #f2f2f2;
+	border-radius:5px;
+	text-align: center;
+	width: auto;
+}
+.view-image img{
+	width:180px;
+	height:210px;
+	margin-left:10px;
+}
+
+.show-view{
+	display:none;
+	border: 15px solid #F2F2F2;
+	z-index:100;
+	border-radius:5px;
+	text-align: center;
+	float:left;
+}
+.div-image{
+	float:left;	
+}
+.right{
+	float:left;
+	width:50px;
+}
+.left{
+	float:left;
+	width:50px;
+}

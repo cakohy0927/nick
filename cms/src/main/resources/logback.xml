@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%-5level] %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="rollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>logs/cms.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/cms.%d{yyyy-MM-dd}.log</fileNamePattern>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="jdbc.audit" level="OFF"/>
+	<logger name="jdbc.connection" level="OFF"/>
+	<logger name="jdbc.resultset" level="OFF"/>
+	<logger name="jdbc.sqlonly" level="OFF"/>
+	<logger name="java.sql.DatabaseMetaData" level="OFF"></logger>
+ 	<logger name="org.hibernate" level="WARN"/>
+ 	<logger name="org.springframework" level="WARN"/>
+	<!-- project default level -->
+	<logger name="com.cako" level="DEBUG" />
+	<!--log4jdbc -->
+	<logger name="jdbc.sqltiming" level="INFO"/>
+	<root level="info">
+		<appender-ref ref="console" />
+		<!--<appender-ref ref="rollingFile" />-->
+	</root>
+</configuration>

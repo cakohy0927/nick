@@ -1,0 +1,45 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Activiti处理引擎的配置，交由Spring管理 -->
+	<!-- 采用spring的数据源类创建一个数据源 -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost/cako_cms?characterEncoding=UTF-8" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+	</bean>
+	<!-- 创建一个事物管理器 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 创建一个流程引擎的配置对象 -->
+	<bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
+		<property name="dataSource" ref="dataSource" />
+		<property name="transactionManager" ref="transactionManager" />
+		<!-- 设置数据库schema的更新方式 -->
+		<property name="databaseSchemaUpdate" value="true" />
+		<!-- 是否启动jobExecutor -->
+		<property name="jobExecutorActivate" value="false" />
+		<property name="createDiagramOnDeploy" value="true"></property>
+		<property name="activityFontName" value="宋体" />
+		<property name="labelFontName" value="宋体" />
+	</bean>
+	<!-- 创建一个流程引擎bean -->
+	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
+		<property name="processEngineConfiguration" ref="processEngineConfiguration" />
+	</bean>
+	<!-- 创建activiti提供的各种服务 -->
+	<!-- 工作流仓储服务 -->
+	<bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService" />
+	<!-- 工作流运行服务 -->
+	<bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService" />
+	<!-- 工作流任务服务 -->
+	<bean id="taskService" factory-bean="processEngine" factory-method="getTaskService" />
+	<!-- 工作流历史数据服务 -->
+	<bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService" />
+	<!-- 工作流管理服务 -->
+	<bean id="managementService" factory-bean="processEngine" factory-method="getManagementService" />
+	<!-- 工作流唯一服务 -->
+	<bean id="IdentityService" factory-bean="processEngine" factory-method="getIdentityService" />
+</beans>

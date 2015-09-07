@@ -1,0 +1,59 @@
+.datagrid-mask {
+	background: none repeat scroll 0 0 #ccc;
+}
+
+.datagrid-mask {
+	display: none;
+	height: 100%;
+	left: 0;
+	opacity: 0.3;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+
+.datagrid-mask-msg {
+	background: url("images/loading.gif") no-repeat scroll 5px center
+		#ffffff;
+}
+
+.datagrid-mask-msg {
+	border-color: #95b8e7;
+}
+
+.datagrid-mask-msg {
+	background: url("../images/loading.gif") no-repeat scroll 5px center
+		#ffffff;
+}
+
+.datagrid-mask-msg {
+	border-style: solid;
+	border-width: 2px;
+	display: none;
+	height: 16px;
+	margin-top: -20px;
+	padding: 0 20px 20px 40px;
+	position: absolute;
+	top: 50%;
+	width: auto;
+}
+
+.page{
+	padding: 5px;
+	width:10px;
+	background:#f2f2f2;
+	color:#000000;
+	text-decoration: none !important;
+	margin:3px;
+}
+#page .active{
+	background:graysky;
+}
+#page a:HOVER {
+	background:graysky;
+	color:#000000;
+}
+#page a:LINK {
+	background: #f2f2f2;
+	color:#000000;
+}

@@ -1,0 +1,70 @@
+ul, li {
+	/*清除ul和li上默认的小圆点*/
+	list-style: none;
+}
+
+ul {
+	/*清除子菜单的缩进值*/
+	padding: 0;
+	margin: -15px 0 0;
+	font-size: 16px;
+}
+
+li {
+	background-color: #EEEEEE;
+}
+.menu > ul >li {
+	margin-top:-15px;
+}
+.menu a {
+	/*取消所有的下划线*/
+	text-decoration: none;
+	padding-left: 20px;
+	display: block;
+	display: inline-block;
+	width: 100px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+.menu{
+	width: 98%;
+	margin-top:-10px;
+	margin-left:-10px;
+	height:auto;
+	background-color:#ffffff;
+	border: 0px;
+}
+.menu h3{
+	background-image: url(../images/title.gif);
+	background-repeat: repeat-x;
+	border-style:hidden;
+	color:#FFFFFF;
+}
+.noSelected{
+	color: white;
+	background-image: url(../images/collapsed.gif);
+	background-repeat: no-repeat;
+	background-position: 3px center;
+}
+h3>ul{
+	margin:0 0 0 10px;
+	color: #000000;
+}
+h3>ul>li{
+	font-weight: normal;
+}
+
+.menu>h3>ul{
+	margin-right:10px;
+}
+.active {
+	
+}
+
+.sectected{
+	color: white;
+	background-image: url(../images/expanded.gif);
+	background-repeat: no-repeat;
+	background-position: 3px center;
+}

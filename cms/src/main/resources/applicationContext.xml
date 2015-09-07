@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+		http://www.springframework.org/schema/task   
+    	http://www.springframework.org/schema/task/spring-task-3.0.xsd"
+       default-lazy-init="true">
+
+
+    <description>Spring公共配置</description>
+	<bean id="pageConfig" class="com.orm.config.PageConfig">
+		<property name="indexUrl" value="/index" />
+		<property name="loginUrl" value="/login" />
+	</bean>
+ 	<bean id="messageSource"  class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>i18n.message</value>
+                <value>i18n.ui</value>
+                <value>i18n.platform</value>
+            </list>
+        </property>
+    </bean>
+    <!-- 各种类型值注入的写法 -->
+    <bean id="messagebean"  class="com.orm.commons.bean.MessageBean">
+        <property name="props">
+            <props>
+                <prop key="url">http://www.tom.com</prop>
+                <prop key="username">zhangsan</prop>
+                <prop key="password">123456789</prop>
+            </props>
+        </property>
+        <property name="books">
+            <map>
+                <entry key="10" value="CoreJava"/>
+                <entry key="11" value="JavaWeb" />
+                <entry key="12" value="SSH2"/>
+            </map>
+        </property>
+        <property name="friends">
+            <set>
+                <value>张三</value>
+                <value>李四</value>
+                <value>王五</value>
+            </set>
+        </property>
+
+        <property name="citys">
+            <list>
+                <value>北京</value>
+                <value>上海</value>
+                <value>深圳</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="SpringApplicationContext" class="com.orm.commons.spring.SpringApplicationContext" lazy-init="true"/>
+    <!-- 使用annotation 自动注册bean, 并保证@Required、@Autowired的属性被注入 -->
+    <context:component-scan base-package="com.cako">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+
+    <jpa:repositories base-package="com.cako"
+        transaction-manager-ref="transactionManager"
+        entity-manager-factory-ref="entityManagerFactory"
+        factory-class="com.orm.commons.bean.DefaultRepositoryFactoryBean">
+   	</jpa:repositories>
+
+    <!-- JPA实体管理工厂的配置 -->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+       	<property name="dataSource" ref="dataSource" />
+        <property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter"/>
+        <property name="packagesToScan" value="com.cako"/>
+        <!--待扫描的实体类包，不再需要persistence.xml了 -->
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+                <prop key="net.sf.ehcache.configurationResourceName">ehcache/ehcache-hibernate-local.xml</prop>
+                <prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>
+                <prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!--指定实现JPA的适配器 -->
+    <bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect"/>
+    </bean>
+
+    <!-- Jpa 事务配置 -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <!-- 使用annotation定义事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+
+    <!-- 设置freeMarker的配置文件路径 -->
+	<bean id="freemarkerConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+    	<property name="location" value="classpath*:/freemarker.properties"/>
+	</bean>
+    <!-- 配置freeMarker的模板路径 -->
+	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+    <!--property name="freemarkerSettings" ref="freemarkerConfiguration"/-->
+	    <property name="templateLoaderPath">
+	        <value>/WEB-INF/ftl/</value>
+	    </property>
+	    <property name="freemarkerVariables">
+	        <map>
+	            <entry key="xml_escape" value-ref="fmXmlEscape" />
+	        </map>
+	    </property>
+	</bean>
+	<bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape"/>
+	<!-- 配置freeMarker视图解析器 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+	    <property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>
+	    <property name="viewNames" value="*.ftl"/>
+	    <property name="contentType" value="text/html; charset=utf-8"/>
+	    <property name="cache" value="true" />
+	    <property name="prefix" value="" />
+	    <property name="suffix" value="" />
+	    <property name="order" value="2"/>
+	</bean>
+	
+    <!-- development 环境 -->
+    <beans profile="development">
+        <context:property-placeholder ignore-unresolvable="true"  location="classpath*:/application.development.properties"/>
+        <!-- 数据源配置, 使用DBCP数据库连接池 -->
+        <bean id="dataSourceSpied" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+            <!-- Connection Info -->
+            <property name="driverClassName" value="${jdbc.driver}"/>
+            <property name="url" value="${jdbc.url}"/>
+            <property name="username" value="${jdbc.username}"/>
+            <property name="password" value="${jdbc.password}"/>
+
+            <!-- Connection Pooling Info -->
+            <property name="maxActive" value="${dbcp.maxActive}"/>
+            <property name="maxIdle" value="${dbcp.maxIdle}"/>
+            <property name="defaultAutoCommit" value="false"/>
+            <!-- 连接Idle一个小时后超时 -->
+            <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+            <property name="minEvictableIdleTimeMillis" value="3600000"/>
+        </bean>
+
+        <bean id="dataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+            <constructor-arg ref="dataSourceSpied"/>
+        </bean>
+    </beans>
+</beans>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.0.xsd">
+
+    <!-- 自定义过滤器 -->
+    <bean id="myFilter" class="com.orm.shiro.ShiroFilter" />
+	<bean id="shiroRealm" class="com.orm.shiro.ShiroRealm">
+	    <property name="authorizationCacheName" value="shiro-authorizationCache"/>
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cachingEnabled" value="true" />  
+        <property name="authenticationCachingEnabled" value="true" />  
+        <property name="authenticationCacheName" value="authenticationCache" />  
+        <property name="authorizationCachingEnabled" value="true" />  
+    </bean>
+	<!-- 权限管理器 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="shiroRealm" />
+		<property name="cacheManager" ref="cacheManager" />
+	    <property name="sessionManager" ref="sessionManager"/>
+	</bean>
+	
+	<!-- session管理器 -->
+	<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+        <property name="sessionDAO" ref="sessionDAO"/>
+        <!-- sessionIdCookie的实现,用于重写覆盖容器默认的JSESSIONID -->
+		<property name="sessionIdCookie" ref="sharesession"/>
+		<!-- 超时时间 -->
+		<property name="globalSessionTimeout" value="1800000"/>
+    </bean>
+    
+    <!-- session存储的实现 -->
+     <bean id="sessionDAO" class="org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO" />
+    
+	<!-- sessionIdCookie的实现,用于重写覆盖容器默认的JSESSIONID -->
+	<bean id="sharesession" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<!-- cookie的name,对应的默认是 JSESSIONID -->
+		<constructor-arg name="name" value="SHAREJSESSIONID"/>
+	</bean>
+
+		<!-- 起效权限注解,这个很少在web项目中用到,一般是控制url的访问,不是在controller中声明权限注解 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor">
+		<property name="proxyTargetClass" value="true" />
+	</bean>
+	 <!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager" />
+	</bean>
+	<!-- 用户授权信息Cache, 采用EhCache -->
+    <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <property name="cacheManagerConfigFile" value="classpath:ehcache/ehcache-shiro.xml"/>
+    </bean>
+    <!-- Spring远程安全确保每个远程方法调用都与一个负责安全验证的Subject绑定 -->
+    <bean id="secureRemoteInvocationExecutor" class="org.apache.shiro.spring.remoting.SecureRemoteInvocationExecutor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+    
+     <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+    
+     <!-- 声明自定义的过滤器 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean" depends-on="myFilter">
+		<property name="securityManager" ref="securityManager" />
+		<!-- 登陆成功后跳转的url -->
+		<property name="successUrl" value="/index.jsp" />
+		<!-- 默认的登陆访问url -->
+		<property name="loginUrl" value="/login.jsp" />
+		<!-- 没有权限跳转的url -->
+		<property name="unauthorizedUrl" value="/error.jsp" />
+		<!-- 声明自定义的过滤器 -->
+		<property name="filters">
+			<map>
+				<entry key="authc" value-ref="myFilter"></entry>
+			</map>
+		</property>
+		
+		<!-- 访问地址的过滤规则,从上至下的优先级,如果有匹配的规则,就会返回,不会再进行匹配 -->
+		<property name="filterChainDefinitions">
+			<value>
+				/login=anon
+				/logout=logout
+				/error.jsp=anon
+				/big/**=anon
+				/static/**=anon
+				/** = user,anyRoles
+				/**=authc
+			</value>
+		</property>
+	</bean>
+	<!--自定义的Roles Filter-->  
+    <bean id="anyRoles" class="com.orm.shiro.RolesAuthorizationFilter" />  
+</beans>
